@@ -142,11 +142,22 @@ export const getShow = async (req, res) => {
       });
     });
 
+    // res.json({
+    //   success: true,
+    //   movie,
+    //   dateTime
+    // });
+
+
     res.json({
-      success: true,
-      movie,
-      dateTime
-    });
+  success: true,
+  show: {
+    movie,
+    dateTime,
+  },
+  movie,
+  dateTime,
+});
 
   } catch (error) {
     console.error(error);

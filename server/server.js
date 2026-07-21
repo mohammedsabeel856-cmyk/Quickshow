@@ -19,6 +19,12 @@ await connectDB()
 //middleware
 app.use(express.json())
 app.use(cors())
+
+///gpt temp
+// app.use(cors({
+//   origin: "http://localhost:5173",
+//   credentials: true,
+// }));
 app.use(clerkMiddleware())
 
 //api routes
