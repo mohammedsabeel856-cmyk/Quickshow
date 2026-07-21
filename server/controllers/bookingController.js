@@ -1,6 +1,7 @@
 import Show from "../models/Show.js";
 import Booking from "../models/Booking.js";
 import stripe from "stripe";
+import { inngest } from "../inngest/index.js";
 
 // Function to check availability of selected seats for a movie
 const checkSeatsAvailability = async (showId, selectedSeats) => {
@@ -91,6 +92,17 @@ export const createBooking = async (req, res) => {
         booking.paymentLink = session.url;
         await booking.save();
 
+        //run inngest scheduler function to check payment status after 10 min
+   
+            await inngest.send({
+                name:"app/checkpayment",
+                date:{
+                    bookingId: booking._id.toString()
+                },
+                expires_at: Math.floor(Date.now()/1000)+ 30 *60,
+            })
+
+
         res.json({ success: true, url: session.url });
     } catch (error) {
         console.log(error.message);
@@ -111,21 +123,3 @@ export const getOccupiedSeats = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
-
-// gpt temp
-// export const getOccupiedSeats = async (req, res) => {
-//     try {
-//         const { showId } = req.params;
-//         const showData = await Show.findById(showId);
-
-//         console.log("Occupied Seats:", showData.occupiedSeats);
-
-//         const occupiedSeats = Object.keys(showData.occupiedSeats || {});
-
-//         res.json({ success: true, occupiedSeats });
-
-//     } catch (error) {
-//         console.log(error.message);
-//         res.json({ success: false, message: error.message });
-//     }
-// };
