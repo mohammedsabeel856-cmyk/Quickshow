@@ -1,8 +1,5 @@
 
-
-
-
-
+import { inngest } from "../inngest/index.js";
 import Movie from "../models/Movie.js";
 import Show from "../models/Show.js";
 
@@ -88,6 +85,12 @@ export const addShow = async (req, res) => {
     if (showsToCreate.length > 0) {
       await Show.insertMany(showsToCreate);
     }
+
+    // trigger inngest event 
+    await inngest.send({
+      name:"app/show.added",
+      date:{movieTitle:movie.title}
+    })
 
     res.json({
       success: true,
